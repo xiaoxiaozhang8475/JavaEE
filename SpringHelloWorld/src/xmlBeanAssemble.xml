@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+	
+	<!-- 基于XML方式的Bean装配示例配置开始 -->
+    
+	<!-- 使用设值方式装配Users实例，原型模式 -->
+	<bean id="user1" class="com.shw.Users" scope="prototype">
+		<property name="loginName" value="zhangsan" />
+	</bean>
+	<!-- 使用设值方式装配Users实例，单例模式 -->
+	<bean id="user2" class="com.shw.Users">
+		<property name="loginName" value="zhangsan" />
+	</bean>
+	<!-- 使用构造方式装配Users实例，单例模式 -->
+	<bean id="user3" class="com.shw.Users">
+	    <!-- 使用构造方式注入属性值 -->
+		<constructor-arg index="0" value="lisi" />
+		<constructor-arg index="1" value="123456" />
+	</bean>
+	
+	<!-- 使用单实例模式装配XmlBeanAssemble实例 -->
+	<bean id="xba" class="com.shw.XmlBeanAssemble" init-method="init" destroy-method="destroy">		
+		<!-- 使用Set方式注入List类型属性   -->
+		<property name="myList1">
+			<list>
+			    <!-- user1实例使用原型模式装配，每次引用将是一个新的Users实例 -->
+				<ref bean="user1"/>
+				<ref bean="user1"/>
+			</list>
+		</property>
+		<!-- 使用Set方式注入List类型属性   -->
+		<property name="myList2">
+			<list>
+			    <!-- user2实例使用单例模式装配，每次引用将是同一个实例 -->
+				<ref bean="user2"/>
+				<ref bean="user2"/>
+			</list>
+		</property>
+		<!-- 使用Set方式注入Set类型属性   -->
+		<property name="mySet">
+			<set>
+				<ref bean="user3"/>
+				<value>Struts 2</value>
+				<value>Spring 3</value>
+			</set>
+		</property>
+		<!-- 使用Set方式注入Map类型属性   -->
+		<property name="myMap">
+			<map>
+				<entry key="Struts 2">
+					<value>支持MVC模式</value>
+				</entry>
+				<entry key="Spring 3">
+					<value>充当组件间的粘合剂</value>
+				</entry>
+			</map>
+		</property>		
+	</bean>	
+    <!-- 基于XML方式的Bean装配示例配置结束 -->
+    
+</beans>

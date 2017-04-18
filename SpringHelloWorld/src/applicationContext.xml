@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+    
+    <!-- 开启注解处理器 -->
+    <context:annotation-config />
+    
+    <bean id="hw" class="com.shw.HelloWorld">  
+    </bean>   
+    
+    <!-- 配置创建UserDAOImpl的实例 -->
+	<bean id="userDAO" class="com.shw.dao.UserDAOImpl">	 
+	</bean>
+	
+	<!-- 配置创建UserBizImpl的实例 -->
+	<bean id="userBiz" class="com.shw.biz.UserBizImpl">
+	    <!-- 依赖注入数据访问层组件 -->
+		<property name="userDAO" ref="userDAO" />
+	</bean>
+	
+	<!-- 使用自动装配实现依赖注入 -->
+	<!-- 
+		<bean id="userBiz" class="com.shw.biz.UserBizImpl" autowire="byName">	    
+		</bean>
+	 -->
+	
+	<!--配置 创建UserBizImplByAnnotationOfResource的实例,由于使用了@Resource注解，节省了property属性 -->
+	<bean id="userBizByAOR" class="com.shw.biz.UserBizImplByAnnotationOfResource">
+	</bean>
+	
+	<!-- 定义前置通知 -->
+	<bean id="logAdvice" class="com.shw.aop.LogAdvice"></bean>
+	
+	<!-- 定义后置通知 -->
+    <bean id="afterLogAdvice" class="com.shw.aop.AfterLogAdvice"></bean>
+    
+    <!-- 定义异常通知 -->
+    <bean id="throwsLogAdvice" class="com.shw.aop.ThrowsLogAdvice"></bean>
+    
+    <!-- 定义环绕通知 -->
+    <bean id="logAroundAdvice" class="com.shw.aop.LogAroundAdvice"></bean>
+    
+	
+	
+	<!-- 使用Spring代理工厂定义一个代理，名 称为ub，将通过ub访问业务类中的方法 -->
+	<bean id="ub" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<!-- 指定代理接口 -->
+		<property name="proxyInterfaces">
+		    <value>com.shw.biz.UserBiz</value>
+		</property>
+		<!-- 指定通知 -->
+		<property name="interceptorNames">
+		 <list>
+		    <!-- 织入前置通知 -->	  
+	     	<value>logAdvice</value>
+	     	<!-- 织入后置通知 -->	   
+            <value>afterLogAdvice</value>
+	     	<!-- 织入异常通知 -->
+	        <value>throwsLogAdvice</value>
+	        <!-- 织入环绕通知 -->
+	        <value>logAroundAdvice</value>
+	        	     	
+	     </list>
+		</property>
+		<!-- 指定目标对象 -->
+		<property name="target" ref="userBiz"></property>
+	</bean>
+	
+</beans>
